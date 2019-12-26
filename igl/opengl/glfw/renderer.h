@@ -99,6 +99,9 @@ public:
 	}
 	void Animate();
 	Eigen::Matrix4f MakeParents(int meshId);
+	Eigen::Matrix3f MakeParentsInverse(int meshId);
+	Eigen::Vector3f getTip();
+	Eigen::Vector3f getR(int meshId);
 
 private:
 	// Stores all the viewing options
@@ -108,5 +111,6 @@ private:
 	int next_core_id;
 	float highdpi;
 	double xold, yold, xrel, yrel;
+	Eigen::Vector3f last_rot;
 };
 

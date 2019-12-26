@@ -458,14 +458,6 @@ namespace glfw
 	  float max_y = data().V.colwise().maxCoeff()[1];
 	  data().SetCenterOfRotation(Eigen::Vector3f(data().V.colwise().mean()[0], data().V.colwise().minCoeff()[1], data().V.colwise().mean()[2]));
 	  data().MyTranslate(Eigen::Vector3f(0, 2 * max_y, 0));
-
-
-
-	  Eigen::Vector3f maxco = data().V.colwise().maxCoeff().cast<float>();
-	  Eigen::Vector3f minco = data().V.colwise().minCoeff().cast<float>();
-	  float link_length = maxco(1) - minco(1) ;
-	  length = link_length;
-	  Eigen::Vector3f amt(0, link_length, 0);
 	  
 	  Eigen::Vector3d M = data().V.colwise().maxCoeff();
 	  Eigen::Vector3d m = data().V.colwise().minCoeff();
@@ -477,12 +469,12 @@ namespace glfw
 	  if (selected_data_index != 0) {
 		  Eigen::MatrixXd V_Box(6, 3);
 		  V_Box <<
-			  0, newCenter(1) - link_length, 0,
-			  0, newCenter(1) + link_length, 0,
-			  link_length, newCenter(1), 0,
-			  -link_length, newCenter(1), 0,
-			  0, newCenter(1), link_length,
-			  0, newCenter(1), -link_length;
+			  0, newCenter(1) - length, 0,
+			  0, newCenter(1) + length, 0,
+			  length, newCenter(1), 0,
+			  -length, newCenter(1), 0,
+			  0, newCenter(1), length,
+			  0, newCenter(1), -length;
 		  for (int i = 0; i < 3; i++) {
 			  data().add_edges
 			  (
@@ -494,7 +486,24 @@ namespace glfw
 	  }
 	  
   }
+
+  Eigen::Vector3f Viewer::getTip() {
+	  Eigen::Vector4f  point = data(0).MakeTrans() * Eigen::Vector4f(0, 0, 0, 1);
+	  Eigen::Vector4f  v = Eigen::Vector4f::Zero();
+	  for (int i = 0; i < num_of_cyl; i++) {
+		  Eigen::Matrix4f  vi = data(0).MakeTrans();//R1
+		  for (int j = 1; j <= i; j++) {
+			  vi = vi * data(j).MakeTrans();//R1*..*Ri
+		  }
+		  v = vi * Eigen::Vector4f(0, 1, 0, 0);
+	  }
+	  Eigen::Vector3f tip = (point + length * v).head(3);// P+L(V1+...+Vi)
+	  return tip;
+  }
   
+  Eigen::Vector3f Viewer::getDes() {
+	  return (data(num_of_cyl).MakeTrans() * Eigen::Vector4f(0, 0, 0, 1)).head(3);
+  }
   
  
 

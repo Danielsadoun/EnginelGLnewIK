@@ -18,16 +18,16 @@ int main(int argc, char* argv[])
 			if (sphere) {
 				viewer.load_mesh_from_file(line);
 				viewer.data().MyTranslate(Eigen:: Vector3f(5, 0, 0));
-				viewer.TranslateInSystem(viewer.MakeTrans(), Eigen::Vector3f(0, 0, -15), true);
+				//viewer.TranslateInSystem(viewer.MakeTrans(), Eigen::Vector3f(0, 0, -15), true);
 			}
 			else {
+				viewer.length = 1.6;
 				for (int i = 0; i < viewer.num_of_cyl; i++) {
 					viewer.load_mesh_from_file(line);
 					viewer.pos_cylinder();
-					
-					
 				}
-				
+				viewer.MyTranslate(Eigen::Vector3f(0, -2, -9));
+				viewer.data(0).MyTranslate(Eigen::Vector3f(0, -1.6, 0));
 			}
 			sphere = true;
 			

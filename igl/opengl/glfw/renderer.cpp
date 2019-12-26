@@ -5,7 +5,7 @@
 #include "igl/look_at.h"
 #include <Eigen/Dense>
 Renderer::Renderer() : selected_core_index(0),
-next_core_id(2)
+next_core_id(2), last_rot(Eigen::Vector3f(1, 1, 1))
 {
 	core_list.emplace_back(igl::opengl::ViewerCore());
 	core_list.front().id = 1;
@@ -292,9 +292,36 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window,int w, int h)
 	}
 
 	void Renderer::Animate() {
-		if (scn->anim) {}
+		if (scn->anim) {
+			Eigen::Vector3f R0 = getR(0);
+			Eigen::Vector3f E = getTip();
+			Eigen::Vector3f D = scn->getDes();
+			Eigen::Vector3f R0D = D - R0;
+			//if the destination is far so we cant reach it we dont do nothing
+			if (R0D.norm() > scn->num_of_cyl* scn->length) {
+				scn->anim = false;
+				std::cout << "cannot reach" << std::endl;
+				return;
+			}
+
+			for (int i = scn->num_of_cyl-1 ; i >= 0; i--) {
+				Eigen::Vector3f R = getR(i);
+				Eigen::Vector3f RE = (E - R);
+				Eigen::Vector3f RD = (D - R);
+				Eigen::Vector3f normal = RE.normalized().cross(RD.normalized());//returns the plane normal
+				double dot = RD.normalized().dot(RE.normalized());//scalar multiplication
+				Eigen::Vector3f ED = (D - E);
+				double angle = ED.norm()<1 ? acos(dot) : acos(dot)/10;
+				scn->data(i).RotateInSystem(scn->MakeTrans(), MakeParentsInverse(i) * normal, angle);
+				E = getTip();
+			}
+			Eigen::Vector3f ED = (D - E);
+			if(ED.norm() <= 0.1)
+				scn->anim = false;
+
+		}
 	}
-	//
+	
 	Eigen::Matrix4f Renderer::MakeParents(int meshId) {
 		Eigen::Matrix4f mat = Eigen::Matrix4f::Identity();
 		if (meshId >= scn->num_of_cyl || meshId == 0) {
@@ -306,6 +333,28 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window,int w, int h)
 		return mat;	
 	}
 
+	//cancel the makeparents 
+	Eigen::Matrix3f Renderer:: MakeParentsInverse(int meshId) {
+		Eigen::Matrix3f mat = scn->data(meshId).GetRotation().inverse();
+		if (meshId >= scn->num_of_cyl || meshId == 0) {
+			return mat;
+		}
+		for (int i = meshId-1 ; i >= 0; i--) {
+			mat = mat * scn->data(i).GetRotation().inverse() ;
+		}
+		return mat;
+	}
+
+	Eigen::Vector3f Renderer::getTip() {
+		Eigen::Vector4f tipCenter(scn->data(scn->num_of_cyl - 1).getCenterOfRotation()[0], scn->data(scn->num_of_cyl - 1).getCenterOfRotation()[1] + 1.6, scn->data(scn->num_of_cyl - 1).getCenterOfRotation()[2], 1);
+		Eigen::Vector4f tip = MakeParents(scn->num_of_cyl - 1) * scn->data(scn->num_of_cyl - 1).MakeTrans() * tipCenter;
+		return tip.head(3);
+	}
+	Eigen::Vector3f Renderer::getR(int meshId) {
+		Eigen::Vector4f RCenter(scn->data(meshId).getCenterOfRotation()[0], scn->data(meshId).getCenterOfRotation()[1] , scn->data(meshId).getCenterOfRotation()[2], 1);
+		Eigen::Vector4f R = MakeParents(meshId) * scn->data(meshId).MakeTrans() * RCenter;
+		return R.head(3);
+	}
 
 	//IGL_INLINE void Viewer::select_hovered_core()
 	//{

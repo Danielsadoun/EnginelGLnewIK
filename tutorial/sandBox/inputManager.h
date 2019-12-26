@@ -239,35 +239,35 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			//get_close to the ball
 			rndr->GetScene()->anim = !rndr->GetScene()->anim;
 			break;
+		case 'P':
 		case 'p':
-			//prints rotation matrices (phi, theta) of the picked link. 
+		{
+			//prints rotation matrices of the picked link. 
 			//If no link is picked prints the rotation matrix of the whole scene.
+			if (scn->is_picked) {
+				std::cout << "rotation matrix of " << scn->selected_data_index << " mesh" << std::endl;
+				std::cout << scn->data().GetRotation() << std::endl;
+			}
+			else {
+				std::cout << "rotation matrix of the scene" << std::endl;
+				std::cout << scn->GetRotation() << std::endl;
+			}
 			break;
+		}
 		case 'T':
 		case 't':
 		{
 			// prints arms tip positions
-			Eigen::Vector4f  point = rndr->GetScene()->data(0).MakeTrans()*Eigen::Vector4f (0,0,0,1);
-			Eigen::Vector3f  v = Eigen:: Vector3f:: Zero();
-			for (int i = 0; i < rndr->GetScene()->num_of_cyl; i++) {
-				Eigen::Matrix3f  vi = rndr->GetScene()->data(0).GetRotation();//R1
-				for (int j = 1; j <= i; j++) {
-					vi = vi * rndr->GetScene()->data(j).GetRotation();//R1*..*Ri
-				}
-				v = vi * Eigen::Vector3f(0, 1, 0);
-				}
-
-			Eigen::Vector3f tip = point.head(3) + rndr->GetScene()->length * v;// P+L(V1+...+Vi)
-			//tip = rndr->GetScene()->MakeTrans() * tip;
-			std::cout << tip << std::endl;
+			std::cout << "tip:"<< std::endl;
+			std::cout << rndr->getTip() << std::endl;
 			break;
 		}
 		case 'D':
 		case 'd':
 		{
 			//prints destination position
-			Eigen::Vector4f  des = rndr->GetScene()->data(rndr->GetScene()->num_of_cyl).MakeTrans() * Eigen::Vector4f(0, 0, 0, 1);
-			std::cout << des.head(3) << std::endl;
+			std::cout << "destination:" << std::endl;
+			std::cout << scn->getDes() << std::endl;
 			break;
 		}
 		default: break;//do nothing
