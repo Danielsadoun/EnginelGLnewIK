@@ -46,9 +46,15 @@ void Movable::MyTranslate(Eigen::Vector3f amt)
 	//T.translate(amt);
 }
 //angle in radians
-void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
+//regular_rotate is a bool that marks if we rotate sphere or scn or around x axis of cyl
+void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle, bool regular_rotate)
 {
-	Tout.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
+	if (regular_rotate) {
+		Tout.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
+	}
+	else {
+		Tout.rotate(Eigen::AngleAxisf(angle, (Tout.rotation().matrix()).transpose() * rotAxis.normalized()));
+	}
 }
 
 void Movable::MyScale(Eigen::Vector3f amt)
@@ -60,8 +66,8 @@ void Movable::TranslateInSystem(Eigen::Matrix4f Mat, Eigen::Vector3f amt, bool p
 	MyTranslate(Mat.block<3, 3>(0, 0).transpose() * amt);
 }
 
-void Movable::RotateInSystem(Eigen::Matrix4f Mat, Eigen::Vector3f rotAxis, double angle) {
-	MyRotate(Mat.block<3, 3>(0, 0).transpose() * rotAxis, angle);
+void Movable::RotateInSystem(Eigen::Matrix4f Mat, Eigen::Vector3f rotAxis, double angle, bool regular_rotate) {
+	MyRotate(Mat.block<3, 3>(0, 0).transpose() * rotAxis, angle, regular_rotate);
 }
 
 void Movable::SetCenterOfRotation(Eigen::Vector3f amt) {

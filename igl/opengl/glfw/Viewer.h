@@ -119,7 +119,6 @@ namespace glfw
 	bool simplificate(double edges_to_delete);
 	void pos_cylinder();
 	Eigen::Vector3f getTip();
-	Eigen::Vector3f getDes();
 
 public:
     //////////////////////
@@ -137,6 +136,7 @@ public:
 	int num_of_cyl;
 	bool anim;
 	float length;
+	int IK_counter;
 
     
 

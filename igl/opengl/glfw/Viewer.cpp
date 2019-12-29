@@ -85,7 +85,8 @@ namespace glfw
     next_data_id(1),
 	is_picked(false),
 	num_of_cyl(num_of_cyl),
-	anim(false)
+	anim(false),
+	IK_counter(0)
   {
     data_list.front().id = 0;
 
@@ -461,30 +462,27 @@ namespace glfw
 	  
 	  Eigen::Vector3d M = data().V.colwise().maxCoeff();
 	  Eigen::Vector3d m = data().V.colwise().minCoeff();
-	  Eigen::Vector3f newCenter(0, m(1), 0);
 	  Eigen::MatrixXd center(1, 3);
-	  center << newCenter(0), newCenter(1), newCenter(2);
+	  center << 0, m(1), 0;
 	  data().add_points(center, Eigen::RowVector3d(1, 0, 0));
 
-	  if (selected_data_index != 0) {
+      if (selected_data_index != 0) {
 		  Eigen::MatrixXd V_Box(6, 3);
 		  V_Box <<
-			  0, newCenter(1) - length, 0,
-			  0, newCenter(1) + length, 0,
-			  length, newCenter(1), 0,
-			  -length, newCenter(1), 0,
-			  0, newCenter(1), length,
-			  0, newCenter(1), -length;
+			0, M(1) - length, 0,
+			0, M(1) + length, 0,
+			length, M(1), 0,
+			-length, M(1), 0,
+			0, M(1), length,
+			0, M(1), -length;
 		  for (int i = 0; i < 3; i++) {
-			  data().add_edges
+			  data(selected_data_index-1).add_edges
 			  (
-				  V_Box.row(2 * i),
-				  V_Box.row(2 * i + 1),
-				  Eigen::RowVector3d(1, 0, 0)
-			  );
+				V_Box.row(2 * i),
+				V_Box.row(2 * i + 1),
+				Eigen::RowVector3d(1, 0, 0));
 		  }
-	  }
-	  
+	  }  
   }
 
   Eigen::Vector3f Viewer::getTip() {
@@ -500,11 +498,6 @@ namespace glfw
 	  Eigen::Vector3f tip = (point + length * v).head(3);// P+L(V1+...+Vi)
 	  return tip;
   }
-  
-  Eigen::Vector3f Viewer::getDes() {
-	  return (data(num_of_cyl).MakeTrans() * Eigen::Vector4f(0, 0, 0, 1)).head(3);
-  }
-  
  
 
 } // end namespace
