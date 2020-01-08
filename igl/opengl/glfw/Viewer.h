@@ -136,7 +136,6 @@ public:
 	int num_of_cyl;
 	bool anim;
 	float length;
-	int IK_counter;
 
     
 

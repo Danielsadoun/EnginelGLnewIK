@@ -53,6 +53,7 @@ void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle, bool regular_rotate
 		Tout.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 	}
 	else {
+		//we cancel the rotation matrix of the curr link for rotate around the parent y axis
 		Tout.rotate(Eigen::AngleAxisf(angle, (Tout.rotation().matrix()).transpose() * rotAxis.normalized()));
 	}
 }

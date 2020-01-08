@@ -85,8 +85,7 @@ namespace glfw
     next_data_id(1),
 	is_picked(false),
 	num_of_cyl(num_of_cyl),
-	anim(false),
-	IK_counter(0)
+	anim(false)
   {
     data_list.front().id = 0;
 
@@ -485,19 +484,7 @@ namespace glfw
 	  }  
   }
 
-  Eigen::Vector3f Viewer::getTip() {
-	  Eigen::Vector4f  point = data(0).MakeTrans() * Eigen::Vector4f(0, 0, 0, 1);
-	  Eigen::Vector4f  v = Eigen::Vector4f::Zero();
-	  for (int i = 0; i < num_of_cyl; i++) {
-		  Eigen::Matrix4f  vi = data(0).MakeTrans();//R1
-		  for (int j = 1; j <= i; j++) {
-			  vi = vi * data(j).MakeTrans();//R1*..*Ri
-		  }
-		  v = vi * Eigen::Vector4f(0, 1, 0, 0);
-	  }
-	  Eigen::Vector3f tip = (point + length * v).head(3);// P+L(V1+...+Vi)
-	  return tip;
-  }
+  
  
 
 } // end namespace

@@ -103,8 +103,7 @@ public:
 	Eigen::Vector3f getTip();
 	Eigen::Vector3f getR(int meshId);
 	Eigen::Vector3f getDes();
-	//void setLast_rot(Eigen::Vector3f curr, int meshId);
-	//Eigen::Matrix3f getLast_rot(int meshId);
+	void set_rotation();
 
 private:
 	// Stores all the viewing options
@@ -114,6 +113,6 @@ private:
 	int next_core_id;
 	float highdpi;
 	double xold, yold, xrel, yrel;
-	//std::vector<Eigen::Matrix3f> list_last_rot;
+	
 };
 

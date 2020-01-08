@@ -18,7 +18,6 @@ int main(int argc, char* argv[])
 			if (sphere) {
 				viewer.load_mesh_from_file(line);
 				viewer.data().MyTranslate(Eigen:: Vector3f(5, 0, 0));
-				//viewer.TranslateInSystem(viewer.MakeTrans(), Eigen::Vector3f(0, 0, -15), true);
 			}
 			else {
 				viewer.length = 1.6;
@@ -33,8 +32,11 @@ int main(int argc, char* argv[])
 			
 		}
 		for (auto& mesh : viewer.data_list) {
-			viewer.data(mesh.id).set_face_based(!viewer.data(mesh.id).face_based);
+			if (mesh.id != viewer.num_of_cyl) {
+				viewer.data(mesh.id).set_face_based(!viewer.data(mesh.id).face_based);
+			}
 			renderer.core(mesh.id).toggle(viewer.data(mesh.id).show_lines);
+			
 		}
 		
 		file.close();

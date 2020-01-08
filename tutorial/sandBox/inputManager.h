@@ -147,10 +147,10 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 		case GLFW_KEY_RIGHT:
 			if (scn->is_picked) {
 				if (scn->selected_data_index >= scn->num_of_cyl) {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, 1, 0), 20 / 180.0f, true);
+					scn->data().MyRotate(Eigen::Vector3f(0, 1, 0), 20 / 180.0f, true);
 				}
 				else {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, 1, 0), 20 / 180.0f, false);
+					scn->data().MyRotate(Eigen::Vector3f(0, 1, 0), 20 / 180.0f, false);
 				}
 			}
 			else {
@@ -160,10 +160,10 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 		case GLFW_KEY_LEFT:
 			if (scn->is_picked) {
 				if (scn->selected_data_index >= scn->num_of_cyl) {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, -1, 0), 20 / 180.0f, true);
+					scn->data().MyRotate(Eigen::Vector3f(0, -1, 0), 20 / 180.0f, true);
 				}
 				else {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, -1, 0), 20 / 180.0f, false);
+					scn->data().MyRotate(Eigen::Vector3f(0, -1, 0), 20 / 180.0f, false);
 				}
 			}
 			else {
@@ -172,12 +172,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 		case GLFW_KEY_UP:
 			if(scn->is_picked){
-				if (scn->IK_counter >= 1) {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, 0, 1), 20 / 180.0f, true);
-				}
-				else {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(1, 0, 0), 20 / 180.0f, true);
-				}
+				scn->data().MyRotate(Eigen::Vector3f(1, 0, 0), 20 / 180.0f, true);
 			}
 			else {
 				scn->RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(1, 0, 0), 20 / 180.0f, true);
@@ -185,12 +180,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 		case GLFW_KEY_DOWN:
 			if (scn->is_picked) {
-				if (scn->IK_counter >= 1) {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, 0, -1), 20 / 180.0f, true);
-				}
-				else {
-					scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(-1, 0, 0), 20 / 180.0f, true);
-				}
+				scn->data().MyRotate(Eigen::Vector3f(-1, 0, 0), 20 / 180.0f, true);
 			}
 			else {
 				scn->RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(-1, 0, 0), 20 / 180.0f, true);
@@ -258,6 +248,9 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 		case ' ':
 			//get_close to the ball
 			rndr->GetScene()->anim = !rndr->GetScene()->anim;
+			if (!rndr->GetScene()->anim) {
+				rndr->set_rotation();
+			}
 			break;
 		case 'P':
 		case 'p':

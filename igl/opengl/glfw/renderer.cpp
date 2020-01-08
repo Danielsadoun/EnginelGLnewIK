@@ -34,10 +34,6 @@ next_core_id(2)
 	xold = 0;
 	yold = 0;
 
-	/*for (int i = 0; i < 4; i++) {
-		list_last_rot.push_back (Eigen::Matrix3f::Identity());
-	}*/
-
 }
 
 IGL_INLINE void Renderer::draw( GLFWwindow* window)
@@ -122,12 +118,12 @@ void Renderer::MouseProcessing(int button)
 		else
 		{
 			if (scn->selected_data_index >= scn->num_of_cyl) {
-				scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, 1, 0), xrel / 180.0f, true);
-				scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(1, 0, 0), yrel / 180.0f, true);
+				scn->data().MyRotate(Eigen::Vector3f(0, 1, 0), xrel / 180.0f, true);
+				scn->data().MyRotate(Eigen::Vector3f(1, 0, 0), yrel / 180.0f, true);
 			}
 			else {
-				scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(0, 1, 0), xrel / 180.0f, false);
-				scn->data().RotateInSystem(scn->MakeTrans(), Eigen::Vector3f(1, 0, 0), yrel / 180.0f, true);
+				scn->data().MyRotate(Eigen::Vector3f(0, 1, 0), xrel / 180.0f, false);
+				scn->data().MyRotate(Eigen::Vector3f(1, 0, 0), yrel / 180.0f, true);
 			}
 			
 		}
@@ -328,7 +324,7 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window,int w, int h)
 			Eigen::Vector3f ED = (D - E);
 			if (ED.norm() <= 0.1) {
 				scn->anim = false;
-				scn->IK_counter = scn->IK_counter + 1;
+				set_rotation();
 			}
 		}
 
@@ -370,17 +366,26 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window,int w, int h)
 		return R.head(3);
 	}
 
-	/*void Renderer::setLast_rot(Eigen::Vector3f curr, int meshId) {
-		list_last_rot[meshId] = curr;
-	}
-
-	Eigen::Matrix3f Renderer:: getLast_rot(int meshId) {
-		return list_last_rot[meshId];
-	}*/
-
 	Eigen::Vector3f Renderer::getDes() {
 		return (scn->data(scn->num_of_cyl).MakeTrans() * Eigen::Vector4f(0, 0, 0, 1)).head(3);
 	}
+	void Renderer::set_rotation() {
+		for (int i = 0; i < scn->num_of_cyl; i++) {
+			float r11 = (scn->data(i).GetRotation().row(1))(1);
+			float r10 = (scn->data(i).GetRotation().row(1))(0);
+			float r12 = (scn->data(i).GetRotation().row(1))(2);
+			float thetaY1 = 0;
+			if (r11 > -1 && r11 < 1) {
+				thetaY1 = atan2f(r10, -r12);
+			}
+			scn->data(i).MyRotate(Eigen::Vector3f(0, 1, 0), -thetaY1, true);
+			if (i != scn->num_of_cyl - 1) {
+				scn->data(i + 1).MyRotate(Eigen::Vector3f(0, 1, 0), thetaY1, false);
+			}
+
+		}
+	}
+
 
 	//IGL_INLINE void Viewer::select_hovered_core()
 	//{
