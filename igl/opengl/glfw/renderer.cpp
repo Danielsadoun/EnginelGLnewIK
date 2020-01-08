@@ -315,10 +315,15 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window,int w, int h)
 				Eigen::Vector3f RE = (E - R);
 				Eigen::Vector3f RD = (D - R);
 				Eigen::Vector3f normal = RE.normalized().cross(RD.normalized());//returns the plane normal
-				double dot = RD.normalized().dot(RE.normalized());//scalar multiplication
+				//dot(RE.NORMALIZE,RD.NORMALIZE)= 1*1*cos(angle between them)
+				double dot = RD.normalized().dot(RE.normalized());//scalar multiplication - cos of the angle between RE and RD because normalized
 				Eigen::Vector3f ED = (D - E);
-				double angle = ED.norm()<1 ? acos(dot) : acos(dot)/10;
-				scn->data(i).RotateInSystem(scn->MakeTrans(), MakeParentsInverse(i) * normal, angle, false);
+				double angle = acos(dot);
+				if (angle > 1)
+					angle = 1;
+				else if (angle < -1)
+					angle = -1;
+				scn->data(i).MyRotate(MakeParents(i).block<3, 3>(0, 0).inverse() * normal, angle/10, false);
 				E = getTip();
 			}
 			Eigen::Vector3f ED = (D - E);
