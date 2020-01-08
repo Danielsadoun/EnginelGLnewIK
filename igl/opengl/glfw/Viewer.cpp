@@ -459,6 +459,7 @@ namespace glfw
 	  data().SetCenterOfRotation(Eigen::Vector3f(data().V.colwise().mean()[0], data().V.colwise().minCoeff()[1], data().V.colwise().mean()[2]));
 	  data().MyTranslate(Eigen::Vector3f(0, 2 * max_y, 0));
 	  
+	  //create axis
 	  Eigen::Vector3d M = data().V.colwise().maxCoeff();
 	  Eigen::Vector3d m = data().V.colwise().minCoeff();
 	  Eigen::MatrixXd center(1, 3);

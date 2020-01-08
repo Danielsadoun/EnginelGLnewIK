@@ -158,6 +158,7 @@ bool Renderer::Picking(double newx, double newy, float * z)
 		double y = core().viewport(3) - newy;
 		Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
 		igl::look_at(core().camera_eye, core().camera_center, core().camera_up, view);
+		//we added the makeparents in duplication for picking the correct cyl according to the draw
 		view = view * (core().trackball_angle * Eigen::Scaling(core().camera_zoom * core().camera_base_zoom)
 				* Eigen::Translation3f(core().camera_translation + core().camera_base_translation)).matrix() * scn->MakeTrans() * MakeParents(scn->selected_data_index) * scn->data().MakeTrans();
 		if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view,
@@ -323,6 +324,7 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window,int w, int h)
 					angle = 1;
 				else if (angle < -1)
 					angle = -1;
+				//we want that this rotate will be around normal and not around parents axis
 				scn->data(i).MyRotate(MakeParents(i).block<3, 3>(0, 0).inverse() * normal, angle/10, false);
 				E = getTip();
 			}

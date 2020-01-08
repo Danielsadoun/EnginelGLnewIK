@@ -85,14 +85,11 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 		}
 		else {
 			if (rndr->GetScene()->selected_data_index < rndr->GetScene()->num_of_cyl) {
-				for (int i = 0; i < rndr->GetScene()->num_of_cyl; i++) {
-					rndr->GetScene()->data(i).TranslateInSystem(rndr->GetScene()->MakeTrans(), Eigen::Vector3f(0, 0, -1), true);
-				}
+				rndr->GetScene()->data(0).TranslateInSystem(rndr->GetScene()->MakeTrans(), Eigen::Vector3f(0, 0, -1), true);
 			}
 			else {
 				rndr->GetScene()->data().TranslateInSystem(rndr->GetScene()->MakeTrans(), Eigen::Vector3f(0, 0, -1), true);
 			}
-			//rndr->GetScene()->data().MyScale(Eigen::Vector3f(1 + y * 0.01, 1 + y * 0.01, 1 + y * 0.01));
 		}
 	}
 	else {
@@ -101,15 +98,11 @@ static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 		}
 		else {
 			if (rndr->GetScene()->selected_data_index < rndr->GetScene()->num_of_cyl) {
-				for (int i = 0; i < rndr->GetScene()->num_of_cyl; i++) {
-					rndr->GetScene()->data(i).TranslateInSystem(rndr->GetScene()->MakeTrans(), Eigen::Vector3f(0, 0, 1), true);
-				}
+				rndr->GetScene()->data(0).TranslateInSystem(rndr->GetScene()->MakeTrans(), Eigen::Vector3f(0, 0, 1), true);
 			}
 			else {
 				rndr->GetScene()->data().TranslateInSystem(rndr->GetScene()->MakeTrans(), Eigen::Vector3f(0, 0, 1), true);
 			}
-			
-			//rndr->GetScene()->data().MyScale(Eigen::Vector3f(1 + y * 0.01, 1 + y * 0.01, 1 + y * 0.01));
 		}
 	}
 	
